@@ -1,32 +1,31 @@
 #!/usr/bin/env python
 """Parameter-sweep statistics: phase x effort x model, n=10 per cell.
 
-Follows ANALYSIS_PLAN.md. Hypotheses H1-H5 were fixed there before this data
+Follows the analysis plan written before data collection. Hypotheses H1-H5 were fixed there before this data
 existed; nothing below is chosen after seeing the result.
 
-Design (plan section 1). 9 models x 2 phases (A = SpikeLab, B = baseline) x 3
+Design. 9 models x 2 phases (A = SpikeLab, B = baseline) x 3
 effort levels (low, medium, max) x n=10 = 540 runs, fully balanced.
 
-Outcome and model (plan section 2). Each of 13 rubric items contributes 0, 1 or 2
+Outcome and model. Each of 13 rubric items contributes 0, 1 or 2
 half-points, so a run is k successes out of 26. Fitted as a binomial GLM with a
 quasi-binomial scale for overdispersion. The plan asked for an observation-level
-random effect or beta-binomial; the quasi-binomial scale achieves the same
-conservative inflation of standard errors with the point estimates unchanged, and
-is used because a full GLMM is not available in the one Python environment on
-this machine whose native libraries are not blocked by Smart App Control.
+random effect or beta-binomial; the quasi-binomial scale is used instead. It
+gives the same conservative inflation of standard errors, with the point
+estimates unchanged.
 
-Separation (plan section 2). Cells that score 26/26 in every replicate send an
+Separation. Cells that score 26/26 in every replicate send an
 unpenalised binomial coefficient to infinity. The check is printed per cell, and
 the primary phase test is a Welch contrast on totals, which is finite regardless.
 
-Panels. Not tested -- see the 2026-08-31 deviation recorded in ANALYSIS_PLAN.md
-section 8. Only the combined 13-item score is analysed here.
+Panels. Not tested: a deviation from the plan, decided 2026-08-31. Only the combined 13-item score is analysed here.
 
-Multiplicity (plan section 6). One model with interactions rather than 27
+Multiplicity. One model with interactions rather than 27
 per-cell tests. Where per-cell contrasts are reported they are descriptive, with
 Benjamini-Hochberg applied across the 27 cells when read inferentially.
 
-Totals are out of 13, not 14 (`reproducible_method` is cell-scope and ungraded).
+Totals are out of 13, not 14 (`reproducible_method` is cell-scope, scored per
+cell by grade_cell.py, and never added to a per-run total).
 
 Usage:  python stats_sweep.py
 """
@@ -153,7 +152,7 @@ def main():
 
     print("=" * 78)
     print("PARAMETER SWEEP STATISTICS -- 9 models x 2 phases x 3 efforts")
-    print("per ANALYSIS_PLAN.md; totals out of 13 (item 14 ungraded)")
+    print("totals out of 13 (item 14 is cell-scope, see grade_cell.py)")
     print("=" * 78)
 
     cells = df.groupby(["effort", "phase", "model"]).size()
@@ -279,7 +278,7 @@ def main():
                for (ph, mod, ef), g in df.groupby(["phase", "model", "effort"])
                if (g.k == g.n).all()]
     if ceiling:
-        print("\n  separation (plan section 2): every replicate at 26/26 in "
+        print("\n  separation: every replicate at 26/26 in "
               f"{', '.join(ceiling)}.")
         print("    Cell means are still fitted exactly, so the deviance-based F")
         print("    tests above hold; individual three-way coefficients do not "
@@ -291,9 +290,9 @@ def main():
         y = df[(df.model == mod) & (df.phase == "B")].total
         print(f"  {PRETTY[mod]:<13}{x.mean():>8.2f}{y.mean():>8.2f}{x.mean() - y.mean():>9.2f}")
 
-    # ---- dispersion is a result (plan section 7) ----------------------------
+    # ---- dispersion is a result ---------------------------------------------
     print("\n" + "=" * 78)
-    print("Within-cell SD (plan section 7: variance is a result, not a nuisance)")
+    print("Within-cell SD (variance is a result, not a nuisance)")
     print("=" * 78)
     print(f"\n  {'model':<13}" + "".join(f"{e + ' A':>9}{e + ' B':>9}" for e in EFFORTS))
     for mod in MODELS:

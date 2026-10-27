@@ -10,7 +10,7 @@ Two views of the same cell scores:
 The score is max_agreeing / n_attempted: the largest group of a cell's ten
 replicates that reported the population-coupling value in mutually commensurable
 units. It is cell-scope, so it is reported on its own and never folded into the
-13-item per-run totals — see grade_cell.py and ANALYSIS_PLAN.md section 8.
+13-item per-run totals; see tools/grade_cell.py.
 
 Item 14 was graded on the confirmatory grid only, so there are three effort
 columns here against the score overview's five. The n=3 levels have no item-14

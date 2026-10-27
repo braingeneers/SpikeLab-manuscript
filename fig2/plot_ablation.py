@@ -11,9 +11,8 @@ Left    total score per arm, individual runs overlaid, with the six pairwise
 Right   mean score per rubric item, split into the six instructed-behaviour and
         the seven analytical-correctness items.
 
-The per-item map is DESCRIPTIVE ONLY. Per the deviation recorded in
-ANALYSIS_PLAN.md section 8 on 2026-08-31, no statistical test is run on the
-panel split; only the combined 13-item score is tested. Nothing on the right
+The per-item map is DESCRIPTIVE ONLY. Per a deviation from the analysis plan,
+decided 2026-08-31, no statistical test is run on the panel split; only the combined 13-item score is tested. Nothing on the right
 half carries a p-value and it must not be described as if it did.
 
 A vs C is the contrast that matters most and the only one that is not an upper

@@ -1,6 +1,6 @@
 """Plot score against cost — the pre-specified cost-matched comparison.
 
-ANALYSIS_PLAN.md section 8: "Score against dollars spent, both arms, all
+From the analysis plan: "Score against dollars spent, both arms, all
 efforts. If SpikeLab at `medium` sits above the baseline's entire effort curve,
 the library is both cheaper and better."
 
