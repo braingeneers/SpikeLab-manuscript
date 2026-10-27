@@ -156,7 +156,9 @@ for rec in CONDITIONS:
     burst_edge_ranges[rec] = compute_closest_burst_edges(tb, edges)
 
 # Bottom row data
-burst_counts = [len(load_workspace_item(ws_path, rec, "tburst")) for rec in CONDITIONS]
+# Slices per recording in the combined stack, not detected bursts: a burst too
+# close to the recording edge for a full window has no slice.
+burst_counts = np.bincount(cond_idx, minlength=len(CONDITIONS)).tolist()
 corr_stack = load_workspace_item(ws_path, "all", "burst_corr_per_unit").stack
 within_corrs = extract_within_condition_corrs(corr_stack, burst_counts)
 pval_corr, sig_corr, _ = compute_pairwise_ttests(within_corrs)

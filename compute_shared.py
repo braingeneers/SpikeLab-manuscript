@@ -219,7 +219,11 @@ def compute_burst_rate_stacks(ws):
         )
         from spikelab.spikedata.rateslicestack import RateSliceStack
 
-        combined_rss = RateSliceStack(combined_stack, pre_ms=PRE_MS, post_ms=POST_MS)
+        # No times_start_to_end: windows from different recordings overlap in
+        # time and would be re-sorted, breaking the recording-by-recording order.
+        combined_rss = RateSliceStack(
+            event_matrix=combined_stack, step_size=all_rss[0].step_size
+        )
         ws.store(
             "all",
             "burst_rss",
@@ -262,7 +266,7 @@ def compute_firing_rates(ws):
 
         sd = ws.get(rec, "spikedata")
         times = np.arange(0, sd.length, 1.0)  # 1 ms resolution
-        fr = sd.resampled_isi(times)  # shape (U, T)
+        fr = sd.resampled_isi(times).inst_Frate_data  # shape (U, T)
 
         ws.store(
             rec,

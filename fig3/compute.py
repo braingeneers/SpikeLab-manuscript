@@ -143,7 +143,7 @@ def step_load_and_split():
     for ns in NAMESPACES:
         sd = ws.get(ns, "spikedata")
         times = np.arange(0, sd.length, 1.0)
-        fr = sd.resampled_isi(times)
+        fr = sd.resampled_isi(times).inst_Frate_data
         ws.store(ns, "fr_rates", fr)
         print(f"  {ns}: {fr.shape}")
 

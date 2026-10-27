@@ -100,14 +100,15 @@ def plot_raster_fr_on_axes(
         show=False,
     )
 
+    # Apply hot colormap. Before clearing the colorbar axes: set_cmap redraws
+    # the attached colorbar, which fails on a cleared axis in matplotlib >= 3.10.
+    if ax_fr.images:
+        ax_fr.images[0].set_cmap(CMAPS["heatmap"])
+
     for cax in [cax_r, cax_f]:
         cax.clear()
         cax.axis("off")
         cax.set_visible(False)
-
-    # Apply hot colormap
-    if ax_fr.images:
-        ax_fr.images[0].set_cmap(CMAPS["heatmap"])
 
     # Raster line widths
     for coll in ax_raster.collections:
