@@ -1,0 +1,8 @@
+__pycache__/
+
+# Figure 2: data built by fig2/prepare_data.py, and rendered outputs
+fig2/data/
+fig2/panels/
+fig2/*.png
+fig2/*.tif
+fig2/*.pdf
