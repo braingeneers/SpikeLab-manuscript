@@ -37,7 +37,7 @@ to /14 and adds the identical value to all ten runs of a cell, which inflates
 apparent per-run precision because the item has no within-cell variance by
 construction. This script therefore writes a per-CELL verdict and leaves per-run
 scorecards untouched; whether to add it to the totals is a reporting decision,
-recorded in ANALYSIS_PLAN.md section 8.
+and the figure code keeps it separate: totals stay out of 13.
 
 Usage:  python grade_cell.py [--write]      (--write emits cell_scores.json)
 """

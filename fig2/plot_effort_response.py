@@ -1,16 +1,15 @@
 """Plot the effort response of both arms — Figure 2, effort panel.
 
 Two tiers sharing an effort axis: the arms above, the gap with its 95% CI
-below. This is H2(a) of the analysis plan — does a larger reasoning budget
-close the gap? The near-flat lower tier is the answer.
+below. Does a larger reasoning budget close the gap? The near-flat lower tier is the answer.
 
 Only ``low``, ``medium`` and ``max`` appear. ``high`` and ``xhigh`` stand at n=3
 and are outside the confirmatory grid, so they are shown in the overview panel
 but take no part here.
 
-The intervals are descriptive. Inference for H2(a) comes from the phase x
-effort interaction terms of the quasi-binomial GLM fitted by
-benchmark_v2/tools/stats_sweep.py, which the caption quotes.
+The intervals are descriptive. Inference comes from the phase x effort
+interaction terms of the quasi-binomial GLM fitted by tools/stats_sweep.py,
+which the caption quotes.
 """
 
 import os

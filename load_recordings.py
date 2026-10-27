@@ -11,8 +11,8 @@ Conditions:
     D50 — 50 µM diazepam
 
 Data source:
-    Pre-computed SpikeData pickle files. Download from Zenodo:
-    <TODO: insert Zenodo DOI link>
+    Pre-computed SpikeData pickle files. Download ``sorted-recordings.zip``
+    (Supplementary Data 3) from Zenodo: https://doi.org/10.5281/zenodo.22681642
 
 Usage:
     python load_recordings.py

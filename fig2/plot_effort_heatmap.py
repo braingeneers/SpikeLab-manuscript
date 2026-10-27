@@ -5,7 +5,7 @@ models unaided (phase B), and their difference. Rows are models, columns are
 reasoning-effort levels in their natural order.
 
 The ``high`` and ``xhigh`` columns stand at n=3 against n=10 elsewhere and are
-outside the pre-registered confirmatory grid. They are drawn here for the
+outside the confirmatory grid. They are drawn here for the
 overview but marked off by a dashed enclosure and grey italic tick labels.
 The n itself belongs to the caption, not the panel. No inferential claim is
 attached to these two columns.

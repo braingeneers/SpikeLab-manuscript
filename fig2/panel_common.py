@@ -70,7 +70,7 @@ def welch_ci(a, b):
     """Difference of means and its Welch 95% CI half-width.
 
     Welch rather than pooled: the two arms have markedly unequal variance, which
-    plan section 7 treats as a result rather than something to average away.
+    is treated as a result rather than something to average away.
     """
     a, b = np.asarray(a, dtype=float), np.asarray(b, dtype=float)
     va, vb = a.var(ddof=1) / len(a), b.var(ddof=1) / len(b)

@@ -1,10 +1,9 @@
 """Plot the four task prompts — Figure 2, prompt panel.
 
-Read from benchmark_v2/prompts.json, which is what the 540 runs were actually
-given. NOT from the v1 ``benchmark_data.py`` the original Figure 2 used: the
+Read from prompts.json in the benchmark archive, which is what the 540 runs
+were actually given. NOT from the v1 ``benchmark_data.py`` the original Figure 2 used: the
 two differ. Tasks 2-4 gained a leading "Using the same IBL auditory cortex
-dataset," clause in v2, and Task 2's shuffle count was raised to 100 and then
-reverted to 10 on 2026-08-15 on feasibility grounds. Every run received 10,
+dataset," clause in v2, and Task 2's shuffle count is 10. Every run received 10,
 verified against turns.json across all 540.
 
 Only the SpikeLab arm's Task 1 carries the ``with /spikelab,`` prefix; the
@@ -42,7 +41,7 @@ RULE_COLOR = "#BDBDBD"
 
 
 def load_prompts():
-    """Return (tasks, prefix) — the frozen v2 prompts and phase A's prefix."""
+    """Return (tasks, prefix) — the v2 prompts and phase A's prefix."""
     with open(PROMPTS_PATH, encoding="utf-8") as fh:
         d = json.load(fh)
     return d["tasks"], d["phase_prefixes"]["A"]

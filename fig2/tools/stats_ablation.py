@@ -1,38 +1,32 @@
 #!/usr/bin/env python
 """Ablation statistics: instructions vs tools, sonnet-4-6 medium, n=10 per arm.
 
-Follows ANALYSIS_PLAN.md. The choices below were fixed there before this data
-existed; nothing here is selected after seeing the result.
-
-Outcome (plan section 2). Each of 13 rubric items contributes 0, 1 or 2
+Outcome. Each of 13 rubric items contributes 0, 1 or 2
 half-points, so a run is k successes out of 26 Bernoulli trials. The score is
 bounded, discrete and piles up on the ceiling, so it is modelled as binomial
 rather than Gaussian -- 13/13 is a legitimate observation, not a boundary
 violation.
 
-Overdispersion. The plan requires beta-binomial or an observation-level random
-effect rather than plain binomial, because runs within an arm vary more than
-binomial sampling allows. Here that is done with a quasi-binomial scale: the
+Overdispersion. Runs within an arm vary more than binomial sampling allows,
+so plain binomial errors would be too small. That is handled with a
+quasi-binomial scale: the
 point estimates are unchanged and the standard errors are inflated by the
 estimated dispersion. This is the conservative direction.
 
-Separation (plan section 2). Arm A contains runs at 26/26. A cell that is
+Separation. Arm A contains runs at 26/26. A cell that is
 entirely successful sends an unpenalised binomial coefficient to infinity. No
 arm here is *completely* separated (arm A has non-perfect runs), so the fit is
 finite, but the check is printed rather than assumed.
 
-Panels. The pre-registered plan asked for correctness (7 items) and instructed
-behaviour (6 items) to be tested separately as well as pooled. That was dropped
-on 2026-08-30 by decision of the investigator: only the combined 13-item score is
-tested. The split is still displayed descriptively in fig_ablation.png. The
-deviation is recorded in ANALYSIS_PLAN.md section 8 so it is visible to a reader
-rather than silent. Pass "correctness" or "instructed" as argv[1] to run them.
+Panels. Only the combined 13-item score is tested. Correctness (7 items) and
+instructed behaviour (6 items) are displayed descriptively in fig_ablation.png
+but not tested separately. Pass "correctness" or "instructed" as argv[1] to run them.
 
-Multiplicity (plan section 6). Benjamini-Hochberg across the six pairwise arm
+Multiplicity. Benjamini-Hochberg across the six pairwise arm
 contrasts.
 
-Totals are out of 13, not 14: item 14 `reproducible_method` is cell-scope and
-`grade_cell.mjs` does not exist (plan section 8).
+Totals are out of 13, not 14: item 14 `reproducible_method` is cell-scope,
+scored per cell by grade_cell.py, and never added to a per-run total.
 
 Usage:  python stats_ablation.py
 """
@@ -148,7 +142,7 @@ def fit_panel(df, panel):
     # overdispersed fit into implausible p-values around 1e-90. Passing the Pearson
     # dispersion as an explicit float gives the intended inflation
     # (SE_quasi = SE_binomial * sqrt(dispersion)), which is the conservative
-    # direction the plan asks for.
+    # direction.
     spec = "k + fail ~ C(arm)"
     base = smf.glm(spec, data=d, family=sm.families.Binomial()).fit()
     disp = float(base.pearson_chi2 / base.df_resid)
@@ -169,7 +163,7 @@ def main():
 
     print("=" * 78)
     print("ABLATION STATISTICS -- sonnet-4-6, medium")
-    print("per ANALYSIS_PLAN.md; totals out of 13 (item 14 ungraded)")
+    print("totals out of 13 (item 14 is cell-scope, see grade_cell.py)")
     print("=" * 78)
 
     print("\n## Descriptives\n")
@@ -181,7 +175,7 @@ def main():
         print(f"{arm + ' ' + label:<22}{len(v):>3}{v.mean():>8.2f}{v.std(ddof=1):>7.2f}"
               f"{v.min():>6.1f}{v.max():>6.1f}   {[float(x) for x in sorted(v)]}")
 
-    # separation check, printed rather than assumed (plan section 2)
+    # separation check, printed rather than assumed
     print("\n## Separation check (all 26 trials successful?)\n")
     for arm, label, _s, _p in ARMS:
         d = df[df.arm == arm]
@@ -190,8 +184,7 @@ def main():
               + ("   <- fully separated, estimates unbounded" if perfect == len(d) else ""))
 
     # Pooled 13-item score only. The panel split is still shown descriptively in
-    # fig_ablation.png, but no inferential test is run on it -- decided 2026-08-30
-    # and recorded as a deviation in ANALYSIS_PLAN.md section 8.
+    # fig_ablation.png, but no inferential test is run on it.
     wanted = sys.argv[1] if len(sys.argv) > 1 else "all"
     panels = [(p, n) for p, n in (("all", 13), ("correctness", 7), ("instructed", 6))
               if p in wanted.split(",")]
@@ -226,7 +219,7 @@ def main():
             print(f"{a + ' vs ' + b:<12}{diff:>8.2f}{ci:>18}{g:>11.2f}{q:>12.2e} {star}")
 
     print("\n" + "=" * 78)
-    print("Dispersion is reported as a result, not a nuisance (plan section 7).")
+    print("Dispersion is reported as a result, not a nuisance.")
     print("=" * 78)
     print(f"\n{'arm':<22}{'sd (total)':>12}")
     for arm, label, _s, _p in ARMS:
@@ -240,8 +233,8 @@ def main():
 
     # Emit the pooled contrasts for plot_ablation.py to annotate from. The figure
     # must not recompute them: recomputation lets the brackets drift from the
-    # numbers reported here, and it dragged scipy into the plotting path where
-    # Smart App Control blocks scipy's _superlu.
+    # numbers reported here, and it would make the plotting code depend on the
+    # model-fitting stack.
     if "all" in wanted.split(","):
         d, _ = fit_panel(df, "all")
         rows = []

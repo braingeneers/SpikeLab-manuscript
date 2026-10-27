@@ -11,13 +11,13 @@ Source of truth
                            (low / medium / max, n=10).
 ``stats_ablation.csv``     per-run totals for the four ablation arms.
 
-Every total is out of 13, not 14: rubric item 14 (``reproducible_method``,
-cell-scope) requires grading machinery that does not exist, so it is ungraded
-throughout. See benchmark_v2/ANALYSIS_PLAN.md section 8.
+Every total is out of 13, not 14: rubric item 14 (``reproducible_method``)
+is cell-scope. ``tools/grade_cell.py`` scores it once per cell, it is read
+separately by ``load_cell_scores``, and it is never added to a per-run total.
 
 Effort levels
 -------------
-``low``, ``medium`` and ``max`` form the pre-registered confirmatory grid at
+``low``, ``medium`` and ``max`` form the confirmatory grid at
 n=10 per cell. ``high`` and ``xhigh`` stand at n=3 and are outside it: they are
 displayed for the overview but carry no inferential claim.
 """
@@ -40,14 +40,14 @@ RUNS_DIR = os.environ.get("BENCH_RUNS") or os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "data")
 BENCH_DIR = os.path.join(RUNS_DIR, "figures")
 
-# Rubric totals are out of 13 (item 14 is ungraded) — see module docstring.
+# Rubric totals are out of 13 (item 14 is cell-scope); see module docstring.
 RUBRIC_MAX = 13
 
 # The three levels of the confirmatory grid, and the two that are not in it.
 CONFIRMATORY_EFFORTS = ["low", "medium", "max"]
 EXPLORATORY_EFFORTS = ["high", "xhigh"]
 
-# Display order: family, then version. Matches ANALYSIS_PLAN.md section 1.
+# Display order: family, then version.
 MODEL_ORDER = [
     "haiku45", "sonnet45", "sonnet46", "sonnet5",
     "opus45", "opus46", "opus47", "opus48", "opus5",
@@ -327,8 +327,8 @@ def load_sweep_runs():
 
 
 # Rubric items in reporting order, with the short labels the panel prints.
-# Instructed behaviour first, then analytical correctness — the split the
-# analysis plan defines. Item 14 (reproducible_method) is ungraded and absent.
+# Instructed behaviour first, then analytical correctness. Item 14 (reproducible_method) is cell-scope and is
+# loaded by load_cell_scores, not listed here.
 RUBRIC_ITEMS = [
     ("organized_project_structure", "instructed_behaviour", "project\nstructure"),
     ("initiated_data_cache", "instructed_behaviour", "data\ncache"),

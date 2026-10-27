@@ -32,7 +32,7 @@ Shared utilities at the root:
 - Python 3.10+
 - [SpikeLab](https://github.com/braingeneers/SpikeLab) (`pip install -e SpikeLab/`)
 - matplotlib, numpy, scipy, scikit-learn, Pillow
-- Spike-sorted recording data (SpikeData `.pkl` files)
+- Spike-sorted recording data (SpikeData `.pkl` files): `sorted-recordings.zip` (Supplementary Data 3) from [doi.org/10.5281/zenodo.22681642](https://doi.org/10.5281/zenodo.22681642)
 
 ## Usage
 
@@ -50,7 +50,7 @@ Figures that depend on shared computations should run `compute_shared.py` and th
 
 ## Figure 2
 
-Figure 2 and Supplementary Figure 1 are built from the benchmark archive on Zenodo, not from recordings, and do not need SpikeLab installed.
+Figure 2 and Supplementary Figure 1 are built from the benchmark archive on Zenodo, not from recordings, and do not need SpikeLab installed. Supplementary Figure 1 (method consistency per model) is the file `Method_consistency_per_model.pdf` in the Zenodo deposit.
 
 1. Download `benchmark.zip` (Supplementary Data 2) from [doi.org/10.5281/zenodo.22681642](https://doi.org/10.5281/zenodo.22681642).
 2. Install the requirements: `pip install numpy pandas scipy statsmodels matplotlib Pillow`
