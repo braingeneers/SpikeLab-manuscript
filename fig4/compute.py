@@ -10,7 +10,7 @@ Computes and stores per-unit metrics that are only used by Figure 4:
 
 Prerequisites (from compute_shared.py):
     - {cond}/spikedata
-    - {cond}/pop_rate_acc
+    - {cond}/pop_rate
     - {cond}/tburst, {cond}/burst_edges
 
 Usage:
@@ -206,7 +206,7 @@ def compute_burst_sensitivity(ws):
     counts = {}
     for rec in CONDITIONS:
         sd = ws.get(rec, "spikedata")
-        pop_rate_acc = ws.get(rec, "pop_rate_acc")
+        pop_rate = ws.get(rec, "pop_rate")  # same rate as compute_shared's detection
         rec_counts = []
 
         for thr in SENSITIVITY_THRESHOLDS:
@@ -214,7 +214,7 @@ def compute_burst_sensitivity(ws):
                 thr_burst=thr,
                 min_burst_diff=MIN_BURST_DIFF,
                 burst_edge_mult_thresh=BURST_EDGE_MULT_THRESH,
-                pop_rate=pop_rate_acc,
+                pop_rate=pop_rate,
             )
             rec_counts.append(len(tburst))
 

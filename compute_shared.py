@@ -75,8 +75,9 @@ def compute_population_rates(ws):
 
     Stores two variants per recording:
         - ``pop_rate``: display-smoothed (sq=20, gauss=100) — for overview plots
-        - ``pop_rate_acc``: accurate (sq=10, gauss=10) — for burst detection and
-          time-resolved analyses
+          and burst detection
+        - ``pop_rate_acc``: accurate (sq=10, gauss=10) — for time-resolved
+          analyses
 
     Parameters
     ----------
@@ -123,7 +124,7 @@ def compute_population_rates(ws):
 # 2. Burst detection
 # ═══════════════════════════════════════════════════════════════════════════
 def compute_burst_detection(ws):
-    """Detect network bursts in each recording using the accurate population rate.
+    """Detect network bursts in each recording using the display-smoothed population rate.
 
     Stores per recording:
         - ``tburst``: burst peak times (ms)
@@ -133,7 +134,7 @@ def compute_burst_detection(ws):
     Parameters
     ----------
     ws : AnalysisWorkspace
-        Workspace with ``pop_rate_acc`` already computed.
+        Workspace with ``pop_rate`` already computed.
     """
     print("=" * 60)
     print("2. Burst detection")
@@ -145,13 +146,13 @@ def compute_burst_detection(ws):
             continue
 
         sd = ws.get(rec, "spikedata")
-        pop_rate_acc = ws.get(rec, "pop_rate_acc")
+        pop_rate = ws.get(rec, "pop_rate")
 
         tburst, edges, peak_amp = sd.get_bursts(
             thr_burst=THR_BURST,
             min_burst_diff=MIN_BURST_DIFF,
             burst_edge_mult_thresh=BURST_EDGE_MULT_THRESH,
-            pop_rate=pop_rate_acc,
+            pop_rate=pop_rate,
         )
 
         ws.store(rec, "tburst", tburst, note=f"Burst peak times (ms), n={len(tburst)}")
