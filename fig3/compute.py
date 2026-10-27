@@ -9,7 +9,7 @@ Pipeline (run steps in order):
     6. coupling_shuffle  — z-score coupling against 100 shuffles → .npz
 
 Prerequisites:
-    - Raw data in manuscript/data/different_samples/{human,mouse,D0}_spikedata/
+    - sorted-recordings.zip from Zenodo unzipped into data/ (see data_paths.py)
     - SpikeLab installed
 
 Usage:
@@ -17,26 +17,25 @@ Usage:
     python -m fig3.compute --step 2         (run only step 2)
 
 Output:
-    manuscript/data/in_vivo/workspace.h5    — workspace with all recordings
-    manuscript/data/in_vivo/*.npz           — precomputed results
+    data/different_samples/workspace        — workspace with all recordings
 """
 
 import os
 import sys
-import pickle
 import numpy as np
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
+sys.path.insert(0, CODE_DIR)
 
 from spikelab.workspace.workspace import AnalysisWorkspace
 from spikelab.workspace.hdf5_io import load_workspace_item
 from spikelab.spikedata.spikedata import SpikeData
 
+from data_paths import load_recording
+
 # ── Paths ─────────────────────────────────────────────────────────────────
-DATA_DIR = os.path.join(REPO_ROOT, "manuscript", "data", "different_samples")
+from data_paths import SAMPLES_DIR as DATA_DIR
 WS_PATH = os.path.join(DATA_DIR, "workspace")
 
 NAMESPACES = ["human_cue", "human_nocue", "mouse_cue", "mouse_nocue", "D0"]
@@ -93,8 +92,7 @@ def step_load_and_split():
 
     # ── Human ──
     print("\nHUMAN")
-    with open(os.path.join(DATA_DIR, "human_spikedata", "spikedata.pkl"), "rb") as f:
-        sd_human = pickle.load(f)
+    sd_human = load_recording("in_vivo", "human")
     if not hasattr(sd_human, "start_time"):
         sd_human.start_time = 0.0
 
@@ -114,9 +112,7 @@ def step_load_and_split():
 
     # ── Mouse (IBL) ──
     print("\nMOUSE (IBL)")
-    mouse_pkl = os.path.join(DATA_DIR, "mouse_spikedata", "spikedata.pkl")
-    with open(mouse_pkl, "rb") as f:
-        sd_mouse_full = pickle.load(f)
+    sd_mouse_full = load_recording("in_vivo", "mouse")
 
     aud_idx = [
         i for i, attr in enumerate(sd_mouse_full.neuron_attributes)
@@ -138,9 +134,7 @@ def step_load_and_split():
 
     # ── Organoid D0 ──
     print("\nORGANOID D0")
-    d0_pkl = os.path.join(DATA_DIR, "D0_spikedata", "spikedata.pkl")
-    with open(d0_pkl, "rb") as f:
-        sd_d0 = pickle.load(f)
+    sd_d0 = load_recording("organoid", "D0")
     print(f"  {sd_d0.N} units, {sd_d0.length/1000:.1f} s")
     ws.store("D0", "spikedata", sd_d0)
 

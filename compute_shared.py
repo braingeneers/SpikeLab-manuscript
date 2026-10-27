@@ -42,8 +42,6 @@ import numpy as np
 # Path setup
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 
 from spikelab.workspace.workspace import AnalysisWorkspace
 from spikelab.spikedata.spikeslicestack import SpikeSliceStack
@@ -51,7 +49,7 @@ from spikelab.spikedata.spikeslicestack import SpikeSliceStack
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-RESULTS_DIR = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
+from data_paths import DIAZEPAM_DIR as RESULTS_DIR
 WS_PATH = os.path.join(RESULTS_DIR, "workspace")
 CONDITIONS = ["D0", "D3", "D10", "D30", "D50"]
 

@@ -30,8 +30,6 @@ from scipy.ndimage import gaussian_filter1d
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 sys.path.insert(0, CODE_DIR)
 
 from plot_config import FONT_SIZES, LINE_WIDTHS

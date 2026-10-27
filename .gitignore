@@ -6,3 +6,8 @@ fig2/panels/
 fig2/*.png
 fig2/*.tif
 fig2/*.pdf
+
+# Figures 3-7: sorted-recordings.zip unzipped here, plus computed workspaces
+/data/
+fig[3-7]/*.png
+fig[3-7]/*.tif

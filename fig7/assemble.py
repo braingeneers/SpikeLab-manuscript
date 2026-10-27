@@ -43,8 +43,6 @@ from matplotlib.lines import Line2D
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 sys.path.insert(0, CODE_DIR)
 
 from plot_config import (
@@ -95,7 +93,7 @@ def reg(ax, role, desc):
 
 
 # ── Load data ──────────────────────────────────────────────────────────────
-results_dir = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
+from data_paths import DIAZEPAM_DIR as results_dir
 ws = AnalysisWorkspace.load(os.path.join(results_dir, "workspace"))
 print("Workspace loaded.\n")
 

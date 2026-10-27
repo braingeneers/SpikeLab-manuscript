@@ -33,8 +33,7 @@ import numpy as np
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
+sys.path.insert(0, CODE_DIR)
 
 from spikelab.workspace.workspace import AnalysisWorkspace
 from spikelab.workspace.hdf5_io import load_workspace_item
@@ -43,7 +42,7 @@ from spikelab.spikedata.utils import PCA_reduction
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-RESULTS_DIR = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
+from data_paths import DIAZEPAM_DIR as RESULTS_DIR
 WS_PATH = os.path.join(RESULTS_DIR, "workspace")
 CONDITIONS = ["D0", "D3", "D10", "D30", "D50"]
 
