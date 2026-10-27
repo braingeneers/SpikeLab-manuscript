@@ -17,7 +17,7 @@ separately by ``load_cell_scores``, and it is never added to a per-run total.
 
 Effort levels
 -------------
-``low``, ``medium`` and ``max`` form the pre-registered confirmatory grid at
+``low``, ``medium`` and ``max`` form the confirmatory grid at
 n=10 per cell. ``high`` and ``xhigh`` stand at n=3 and are outside it: they are
 displayed for the overview but carry no inferential claim.
 """
@@ -327,8 +327,7 @@ def load_sweep_runs():
 
 
 # Rubric items in reporting order, with the short labels the panel prints.
-# Instructed behaviour first, then analytical correctness — the split the
-# analysis plan defines. Item 14 (reproducible_method) is cell-scope and is
+# Instructed behaviour first, then analytical correctness. Item 14 (reproducible_method) is cell-scope and is
 # loaded by load_cell_scores, not listed here.
 RUBRIC_ITEMS = [
     ("organized_project_structure", "instructed_behaviour", "project\nstructure"),

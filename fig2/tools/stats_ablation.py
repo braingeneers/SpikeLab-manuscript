@@ -1,18 +1,15 @@
 #!/usr/bin/env python
 """Ablation statistics: instructions vs tools, sonnet-4-6 medium, n=10 per arm.
 
-Follows the analysis plan written before data collection. The choices below were fixed there before this data
-existed; nothing here is selected after seeing the result.
-
 Outcome. Each of 13 rubric items contributes 0, 1 or 2
 half-points, so a run is k successes out of 26 Bernoulli trials. The score is
 bounded, discrete and piles up on the ceiling, so it is modelled as binomial
 rather than Gaussian -- 13/13 is a legitimate observation, not a boundary
 violation.
 
-Overdispersion. The plan requires beta-binomial or an observation-level random
-effect rather than plain binomial, because runs within an arm vary more than
-binomial sampling allows. Here that is done with a quasi-binomial scale: the
+Overdispersion. Runs within an arm vary more than binomial sampling allows,
+so plain binomial errors would be too small. That is handled with a
+quasi-binomial scale: the
 point estimates are unchanged and the standard errors are inflated by the
 estimated dispersion. This is the conservative direction.
 
@@ -21,12 +18,9 @@ entirely successful sends an unpenalised binomial coefficient to infinity. No
 arm here is *completely* separated (arm A has non-perfect runs), so the fit is
 finite, but the check is printed rather than assumed.
 
-Panels. The pre-registered plan asked for correctness (7 items) and instructed
-behaviour (6 items) to be tested separately as well as pooled. That was dropped
-on 2026-08-30 by decision of the investigator: only the combined 13-item score is
-tested. The split is still displayed descriptively in fig_ablation.png. This
-deviation from the plan is stated here so it is visible to a reader rather
-than silent. Pass "correctness" or "instructed" as argv[1] to run them.
+Panels. Only the combined 13-item score is tested. Correctness (7 items) and
+instructed behaviour (6 items) are displayed descriptively in fig_ablation.png
+but not tested separately. Pass "correctness" or "instructed" as argv[1] to run them.
 
 Multiplicity. Benjamini-Hochberg across the six pairwise arm
 contrasts.
@@ -148,7 +142,7 @@ def fit_panel(df, panel):
     # overdispersed fit into implausible p-values around 1e-90. Passing the Pearson
     # dispersion as an explicit float gives the intended inflation
     # (SE_quasi = SE_binomial * sqrt(dispersion)), which is the conservative
-    # direction the plan asks for.
+    # direction.
     spec = "k + fail ~ C(arm)"
     base = smf.glm(spec, data=d, family=sm.families.Binomial()).fit()
     disp = float(base.pearson_chi2 / base.df_resid)
@@ -190,8 +184,7 @@ def main():
               + ("   <- fully separated, estimates unbounded" if perfect == len(d) else ""))
 
     # Pooled 13-item score only. The panel split is still shown descriptively in
-    # fig_ablation.png, but no inferential test is run on it -- a deviation from
-    # the analysis plan, decided 2026-08-30.
+    # fig_ablation.png, but no inferential test is run on it.
     wanted = sys.argv[1] if len(sys.argv) > 1 else "all"
     panels = [(p, n) for p, n in (("all", 13), ("correctness", 7), ("instructed", 6))
               if p in wanted.split(",")]

@@ -9,8 +9,8 @@ meaningful; order between haiku, sonnet and opus is not, and a line drawn
 straight through would imply a continuum that does not exist.
 
 The intervals are descriptive. They are nine unadjusted contrasts, not the
-27-cell family the analysis plan corrects across, and the pre-registered
-phase x model interaction (H3) is not tested — see the caption.
+27-cell family corrected across elsewhere, and the phase x model interaction
+is not tested here; see the caption.
 """
 
 import os

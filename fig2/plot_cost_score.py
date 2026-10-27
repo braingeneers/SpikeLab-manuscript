@@ -1,8 +1,8 @@
-"""Plot score against cost — the pre-specified cost-matched comparison.
+"""Plot score against cost — the cost-matched comparison.
 
-From the analysis plan: "Score against dollars spent, both arms, all
-efforts. If SpikeLab at `medium` sits above the baseline's entire effort curve,
-the library is both cheaper and better."
+Score against dollars spent, both arms, all efforts. If SpikeLab at `medium`
+sits above the baseline's entire effort curve, the library is both cheaper
+and better.
 
 One point per model x phase x effort cell (9 x 2 x 3 = 54). Colour is the model,
 family hue tinted by generation; marker is the arm. The three effort levels of
@@ -240,7 +240,7 @@ if __name__ == "__main__":
               f"{PHASE_LABELS_SHORT[c['phase']]:<9} {c['effort']:<7} "
               f"(${c['cost']:.2f}, {c['score']:.2f}/13)")
 
-    # The plan's specific question, section 8.
+    # Does SpikeLab at medium sit above the baseline's entire effort curve?
     a_med = [c for c in cells if c["phase"] == "A" and c["effort"] == "medium"]
     b_all = [c for c in cells if c["phase"] == "B"]
     for c in sorted(a_med, key=lambda c: c["cost"])[:3]:

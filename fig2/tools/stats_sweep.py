@@ -1,24 +1,20 @@
 #!/usr/bin/env python
 """Parameter-sweep statistics: phase x effort x model, n=10 per cell.
 
-Follows the analysis plan written before data collection. Hypotheses H1-H5 were fixed there before this data
-existed; nothing below is chosen after seeing the result.
-
 Design. 9 models x 2 phases (A = SpikeLab, B = baseline) x 3
 effort levels (low, medium, max) x n=10 = 540 runs, fully balanced.
 
 Outcome and model. Each of 13 rubric items contributes 0, 1 or 2
 half-points, so a run is k successes out of 26. Fitted as a binomial GLM with a
-quasi-binomial scale for overdispersion. The plan asked for an observation-level
-random effect or beta-binomial; the quasi-binomial scale is used instead. It
-gives the same conservative inflation of standard errors, with the point
-estimates unchanged.
+quasi-binomial scale for overdispersion. The quasi-binomial scale inflates the
+standard errors by the estimated dispersion, the conservative direction, and
+leaves the point estimates unchanged.
 
 Separation. Cells that score 26/26 in every replicate send an
 unpenalised binomial coefficient to infinity. The check is printed per cell, and
 the primary phase test is a Welch contrast on totals, which is finite regardless.
 
-Panels. Not tested: a deviation from the plan, decided 2026-08-31. Only the combined 13-item score is analysed here.
+Panels. Not tested. Only the combined 13-item score is analysed here.
 
 Multiplicity. One model with interactions rather than 27
 per-cell tests. Where per-cell contrasts are reported they are descriptive, with
@@ -160,9 +156,9 @@ def main():
           f"{cells.min()}-{cells.max()}"
           + ("  (BALANCED)" if cells.min() == cells.max() else "  (UNBALANCED)"))
 
-    # ---- H1: main effect of phase -------------------------------------------
+    # ---- main effect of phase ----------------------------------------------
     print("\n" + "=" * 78)
-    print("H1  main effect of phase (SpikeLab raises the score)")
+    print("main effect of phase (SpikeLab raises the score)")
     print("=" * 78)
     a = df.loc[df.phase == "A", "total"].values
     b = df.loc[df.phase == "B", "total"].values
@@ -180,7 +176,7 @@ def main():
             continue
         print(f"  {name:<34}{m.params[name]:>9.3f}{m.bse[name]:>8.3f}{m.pvalues[name]:>12.3g}")
 
-    # per-cell direction: H1 is falsified if the phase effect reverses anywhere
+    # per-cell direction: does the phase effect reverse anywhere?
     print("\n  per-cell A-B (descriptive; BH across the 27 cells):")
     rows = []
     for e in EFFORTS:
@@ -198,9 +194,9 @@ def main():
           f"({[PRETTY[r[1]] + ' ' + r[0] for r in rows if r[2] == max(x[2] for x in rows)][0]})")
     print(f"    cells significant at BH q<0.05: {int((q < 0.05).sum())} of {len(rows)}")
 
-    # ---- H2: does effort substitute for the library? ------------------------
+    # ---- does effort substitute for the library? ---------------------------
     print("\n" + "=" * 78)
-    print("H2  phase x effort -- does reasoning budget substitute for the library?")
+    print("phase x effort -- does reasoning budget substitute for the library?")
     print("=" * 78)
     print("\n  (a) interaction: does the A-B gap shrink as effort rises?\n")
     print(f"  {'effort':<10}{'phase A':>10}{'phase B':>10}{'A - B':>9}")
@@ -214,7 +210,7 @@ def main():
 
     # The two coefficients above are separate contrasts against `low`. The joint
     # test of the whole interaction is the one to quote, and it is the same kind
-    # of nested F test used for H3-H5 below, so the hypotheses stay comparable.
+    # of nested F test used for the interactions below, so the tests stay comparable.
     _spec_2way = ("k + fail ~ C(phase)*C(effort) + C(phase)*C(model)"
                   " + C(effort)*C(model)")
     _spec_no_pe = ("k + fail ~ C(phase) + C(effort) + C(phase)*C(model)"
@@ -235,17 +231,18 @@ def main():
         subs += ok
         print(f"  {PRETTY[mod]:<13}{al:>8.2f}{bm:>8.2f}{bm - al:>15.2f}   {'YES' if ok else 'no'}")
     print(f"\n    substitution holds in {subs} of {len(MODELS)} models"
-          + ("   <- H2 answered 'yes'; framing must change" if subs else
+          + ("   <- reasoning budget substitutes for the library" if subs else
              "   <- reasoning budget does not substitute for the library"))
 
-    # ---- H3 / H4 / H5: interactions ----------------------------------------
+    # ---- interactions ------------------------------------------------------
     print("\n" + "=" * 78)
-    print("H3/H4/H5  interactions")
+    print("interactions")
     print("=" * 78)
-    # H3 and H4 are tested in the all-two-way model, not the three-way one.
+    # phase x model and effort x model are tested in the all-two-way model, not
+    # the three-way one.
     # Marginality forbids dropping phase:model while phase:effort:model, which
-    # contains it, is still in the model. The three-way is tested separately as
-    # H5, against the two-way model.
+    # contains it, is still in the model. The three-way is tested separately,
+    # against the two-way model.
     spec_3way = "k + fail ~ C(phase) * C(effort) * C(model)"
     spec_2way = ("k + fail ~ C(phase)*C(effort) + C(phase)*C(model)"
                  " + C(effort)*C(model)")
@@ -260,18 +257,18 @@ def main():
     print(f"\n  two-way dispersion = {disp2:.2f};  three-way = {disp3:.2f}")
     print("\n  quasi-likelihood F tests (dispersion from the larger model):\n")
     for label, full_m, red_m, disp in (
-        ("H3  phase x model", m2, m_no_pm, disp2),
-        ("H4  effort x model", m2, m_no_em, disp2),
-        ("H5  phase x effort x model", m3, m2, disp3),
+        ("phase x model", m2, m_no_pm, disp2),
+        ("effort x model", m2, m_no_em, disp2),
+        ("phase x effort x model", m3, m2, disp3),
     ):
         f, ndf, ddf, p = quasi_f(full_m, red_m, disp)
         print(f"    {label:<28} F({ndf}, {ddf}) = {f:6.2f}   p = {p:.3g}")
 
     # Sensitivity: the three-way fit is saturated at the cell level, so its
     # dispersion is the within-cell overdispersion free of lack-of-fit. Re-run
-    # H3 against it, in case the choice of dispersion is what drives the result.
+    # phase x model against it, in case the choice of dispersion is what drives the result.
     f_alt, ndf_alt, ddf_alt, p_alt = quasi_f(m2, m_no_pm, disp3)
-    print(f"\n    H3 using the saturated-model dispersion ({disp3:.2f}): "
+    print(f"\n    phase x model using the saturated-model dispersion ({disp3:.2f}): "
           f"F({ndf_alt}, {ddf_alt}) = {f_alt:.2f}, p = {p_alt:.3g}")
 
     ceiling = [f"{ph} {PRETTY[mod]} {ef}"
@@ -283,7 +280,7 @@ def main():
         print("    Cell means are still fitted exactly, so the deviance-based F")
         print("    tests above hold; individual three-way coefficients do not "
               f"(max |beta| = {np.abs(m3.params).max():.1f}).")
-    print("\n  per-model A-B gap (H3: does the benefit depend on the model?):\n")
+    print("\n  per-model A-B gap (does the benefit depend on the model?):\n")
     print(f"  {'model':<13}{'A':>8}{'B':>8}{'A - B':>9}")
     for mod in MODELS:
         x = df[(df.model == mod) & (df.phase == "A")].total

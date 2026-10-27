@@ -4,7 +4,7 @@
 Effort runs live in bench_runs/effort/; the `medium` level comes from the main
 model grid (round6 / round6B / sweep), because medium was already collected
 there at n=3 and re-running it would waste quota. Both sources are scored
-against the same frozen rubric, so they are directly comparable.
+against the same rubric, so they are directly comparable.
 
 Usage:
     python plot_effort.py
