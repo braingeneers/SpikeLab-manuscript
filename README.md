@@ -23,30 +23,40 @@ Each figure directory from Fig. 3 onward contains (Fig. 2 is laid out differentl
 
 Shared utilities at the root:
 
+- **`data_paths.py`** — where the code finds the recordings and writes its workspaces
 - **`load_recordings.py`** — loads spike-sorted recordings into an AnalysisWorkspace
 - **`compute_shared.py`** — shared computations used across multiple figures
 - **`plot_config.py`** — matplotlib style configuration (eLife formatting, color palette, figure sizing)
 
-## Prerequisites
+## Prerequisites (Figs. 3-7)
 
 - Python 3.10+
-- [SpikeLab](https://github.com/braingeneers/SpikeLab) (`pip install -e SpikeLab/`)
-- matplotlib, numpy, scipy, scikit-learn, Pillow
-- Spike-sorted recording data (SpikeData `.pkl` files): `sorted-recordings.zip` (Supplementary Data 3) from [doi.org/10.5281/zenodo.22681642](https://doi.org/10.5281/zenodo.22681642)
+- [SpikeLab](https://github.com/braingeneers/SpikeLab) 0.1.2: `pip install spikelab==0.1.2`
+- `pip install scikit-learn networkx python-louvain Pillow`
+- Fig. 7 also needs the GPLVM extra: `pip install "spikelab[gplvm]==0.1.2"` and `pip install git+https://github.com/samdeoxys1/poor-man-GPLVM.git`
+- Spike-sorted recordings: download `sorted-recordings.zip` (Supplementary Data 3) from [doi.org/10.5281/zenodo.22681642](https://doi.org/10.5281/zenodo.22681642) and unzip it into `data/`, so the recordings are in `data/sorted_recordings/`. To keep the data elsewhere, set `SPIKELAB_MANUSCRIPT_DATA` to that folder.
+- Disk space: the computed workspaces need about 30 GB free, most of it for Fig. 3 (a 12 GB workspace, briefly written twice while saving).
 
-## Usage
+## Usage (Figs. 3-7)
 
-Run from the repository root:
+Run from the repository root. Each compute step stores its results in a workspace under `data/` and skips results that are already there.
 
 ```bash
-# Compute intermediate results for a figure
+# Fig. 3 (human and mouse in vivo, organoid baseline)
 python -m fig3.compute
-
-# Assemble the final figure
 python -m fig3.assemble
+
+# Figs. 4-7 (diazepam series) share one workspace: build it first
+python load_recordings.py
+python compute_shared.py
+
+python -m fig4.compute && python -m fig4.assemble
+python -m fig5.compute && python -m fig5.assemble
+python -m fig6.compute && python -m fig6.assemble
+python -m fig7.compute && python -m fig7.assemble
 ```
 
-Figures that depend on shared computations should run `compute_shared.py` and the figure-specific `compute.py` before assembly.
+Some steps take hours on a laptop: Fig. 3's compute step and Fig. 6's rank-order correlations each took several hours here.
 
 ## Figure 2
 
