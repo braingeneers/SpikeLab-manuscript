@@ -43,7 +43,7 @@ CONDITIONS = ["D0", "D3", "D10", "D30", "D50"]
 ISI_FILTER_MS = 200
 
 # Burst sensitivity: range of RMS multiplier thresholds to test
-SENSITIVITY_THRESHOLDS = np.arange(1.0, 4.25, 0.25)
+SENSITIVITY_THRESHOLDS = np.arange(1.0, 5.25, 0.25)  # past 4.0 leaves room for the legend
 MIN_BURST_DIFF = 1000  # ms
 BURST_EDGE_MULT_THRESH = 0.2
 
