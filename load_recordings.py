@@ -13,47 +13,43 @@ Conditions:
 Data source:
     Pre-computed SpikeData pickle files. Download ``sorted-recordings.zip``
     (Supplementary Data 3) from Zenodo: https://doi.org/10.5281/zenodo.22681642
+    and unzip it into data/ (see data_paths.py).
 
 Usage:
     python load_recordings.py
 
-    This creates an AnalysisWorkspace at results/workspace containing one
-    namespace per condition, each with a 'spikedata' key holding the
-    SpikeData object.
+    This creates an AnalysisWorkspace at data/diazepam_casestudy/workspace
+    containing one namespace per condition, each with a 'spikedata' key
+    holding the SpikeData object.
 """
 
 import os
-import pickle
 import sys
 
 # ---------------------------------------------------------------------------
 # Path setup
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 
 from spikelab.workspace.workspace import AnalysisWorkspace
+
+from data_paths import DIAZEPAM_DIR, load_recording
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-DATA_DIR = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
-RESULTS_DIR = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
+RESULTS_DIR = DIAZEPAM_DIR
 CONDITIONS = ["D0", "D3", "D10", "D30", "D50"]
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
-def load_all_recordings(data_dir=DATA_DIR, results_dir=RESULTS_DIR):
+def load_all_recordings(results_dir=RESULTS_DIR):
     """Load all SpikeData pickle files and store them in a workspace.
 
     Parameters
     ----------
-    data_dir : str
-        Directory containing condition subdirectories (D0/, D3/, etc.),
-        each with a ``spikedata.pkl`` file.
     results_dir : str
         Directory where the workspace will be saved.
 
@@ -68,9 +64,7 @@ def load_all_recordings(data_dir=DATA_DIR, results_dir=RESULTS_DIR):
     ws = AnalysisWorkspace(name="200123_2953_diazepam")
 
     for rec in CONDITIONS:
-        pkl_path = os.path.join(data_dir, f"{rec}_spikedata", "spikedata.pkl")
-        with open(pkl_path, "rb") as f:
-            sd = pickle.load(f)
+        sd = load_recording("organoid", rec)
         ws.store(rec, "spikedata", sd)
         print(f"{rec}: {sd.N} units, {sd.length:.0f} ms ({sd.length / 1000:.1f} s)")
 

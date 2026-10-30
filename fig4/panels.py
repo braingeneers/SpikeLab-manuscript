@@ -32,8 +32,6 @@ from matplotlib.patches import Rectangle
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPERIMENT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(EXPERIMENT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 sys.path.insert(0, os.path.abspath(os.path.join(EXPERIMENT_DIR, "..")))
 
 from plot_config import COLORS, FONT_SIZES, LINE_WIDTHS, CONDITIONS

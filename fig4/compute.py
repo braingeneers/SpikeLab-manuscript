@@ -10,7 +10,7 @@ Computes and stores per-unit metrics that are only used by Figure 4:
 
 Prerequisites (from compute_shared.py):
     - {cond}/spikedata
-    - {cond}/pop_rate_acc
+    - {cond}/pop_rate
     - {cond}/tburst, {cond}/burst_edges
 
 Usage:
@@ -28,15 +28,14 @@ import numpy as np
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
+sys.path.insert(0, CODE_DIR)
 
 from spikelab.workspace.workspace import AnalysisWorkspace
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-RESULTS_DIR = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
+from data_paths import DIAZEPAM_DIR as RESULTS_DIR
 WS_PATH = os.path.join(RESULTS_DIR, "workspace")
 CONDITIONS = ["D0", "D3", "D10", "D30", "D50"]
 
@@ -44,7 +43,7 @@ CONDITIONS = ["D0", "D3", "D10", "D30", "D50"]
 ISI_FILTER_MS = 200
 
 # Burst sensitivity: range of RMS multiplier thresholds to test
-SENSITIVITY_THRESHOLDS = np.arange(1.0, 4.25, 0.25)
+SENSITIVITY_THRESHOLDS = np.arange(1.0, 5.25, 0.25)  # past 4.0 leaves room for the legend
 MIN_BURST_DIFF = 1000  # ms
 BURST_EDGE_MULT_THRESH = 0.2
 
@@ -207,7 +206,7 @@ def compute_burst_sensitivity(ws):
     counts = {}
     for rec in CONDITIONS:
         sd = ws.get(rec, "spikedata")
-        pop_rate_acc = ws.get(rec, "pop_rate_acc")
+        pop_rate = ws.get(rec, "pop_rate")  # same rate as compute_shared's detection
         rec_counts = []
 
         for thr in SENSITIVITY_THRESHOLDS:
@@ -215,7 +214,7 @@ def compute_burst_sensitivity(ws):
                 thr_burst=thr,
                 min_burst_diff=MIN_BURST_DIFF,
                 burst_edge_mult_thresh=BURST_EDGE_MULT_THRESH,
-                pop_rate=pop_rate_acc,
+                pop_rate=pop_rate,
             )
             rec_counts.append(len(tburst))
 

@@ -42,8 +42,6 @@ import numpy as np
 # Path setup
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 
 from spikelab.workspace.workspace import AnalysisWorkspace
 from spikelab.spikedata.spikeslicestack import SpikeSliceStack
@@ -51,7 +49,7 @@ from spikelab.spikedata.spikeslicestack import SpikeSliceStack
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-RESULTS_DIR = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
+from data_paths import DIAZEPAM_DIR as RESULTS_DIR
 WS_PATH = os.path.join(RESULTS_DIR, "workspace")
 CONDITIONS = ["D0", "D3", "D10", "D30", "D50"]
 
@@ -77,8 +75,9 @@ def compute_population_rates(ws):
 
     Stores two variants per recording:
         - ``pop_rate``: display-smoothed (sq=20, gauss=100) — for overview plots
-        - ``pop_rate_acc``: accurate (sq=10, gauss=10) — for burst detection and
-          time-resolved analyses
+          and burst detection
+        - ``pop_rate_acc``: accurate (sq=10, gauss=10) — for time-resolved
+          analyses
 
     Parameters
     ----------
@@ -125,7 +124,7 @@ def compute_population_rates(ws):
 # 2. Burst detection
 # ═══════════════════════════════════════════════════════════════════════════
 def compute_burst_detection(ws):
-    """Detect network bursts in each recording using the accurate population rate.
+    """Detect network bursts in each recording using the display-smoothed population rate.
 
     Stores per recording:
         - ``tburst``: burst peak times (ms)
@@ -135,7 +134,7 @@ def compute_burst_detection(ws):
     Parameters
     ----------
     ws : AnalysisWorkspace
-        Workspace with ``pop_rate_acc`` already computed.
+        Workspace with ``pop_rate`` already computed.
     """
     print("=" * 60)
     print("2. Burst detection")
@@ -147,13 +146,13 @@ def compute_burst_detection(ws):
             continue
 
         sd = ws.get(rec, "spikedata")
-        pop_rate_acc = ws.get(rec, "pop_rate_acc")
+        pop_rate = ws.get(rec, "pop_rate")
 
         tburst, edges, peak_amp = sd.get_bursts(
             thr_burst=THR_BURST,
             min_burst_diff=MIN_BURST_DIFF,
             burst_edge_mult_thresh=BURST_EDGE_MULT_THRESH,
-            pop_rate=pop_rate_acc,
+            pop_rate=pop_rate,
         )
 
         ws.store(rec, "tburst", tburst, note=f"Burst peak times (ms), n={len(tburst)}")
@@ -221,7 +220,11 @@ def compute_burst_rate_stacks(ws):
         )
         from spikelab.spikedata.rateslicestack import RateSliceStack
 
-        combined_rss = RateSliceStack(combined_stack, pre_ms=PRE_MS, post_ms=POST_MS)
+        # No times_start_to_end: windows from different recordings overlap in
+        # time and would be re-sorted, breaking the recording-by-recording order.
+        combined_rss = RateSliceStack(
+            event_matrix=combined_stack, step_size=all_rss[0].step_size
+        )
         ws.store(
             "all",
             "burst_rss",
@@ -264,7 +267,7 @@ def compute_firing_rates(ws):
 
         sd = ws.get(rec, "spikedata")
         times = np.arange(0, sd.length, 1.0)  # 1 ms resolution
-        fr = sd.resampled_isi(times)  # shape (U, T)
+        fr = sd.resampled_isi(times).inst_Frate_data  # shape (U, T)
 
         ws.store(
             rec,

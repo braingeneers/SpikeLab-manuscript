@@ -34,8 +34,6 @@ from scipy.stats import gaussian_kde
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPERIMENT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(EXPERIMENT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 sys.path.insert(0, os.path.abspath(os.path.join(EXPERIMENT_DIR, "..")))
 
 from plot_config import COLORS, FONT_SIZES, LINE_WIDTHS, CMAPS, CONDITIONS
@@ -102,14 +100,15 @@ def plot_raster_fr_on_axes(
         show=False,
     )
 
+    # Apply hot colormap. Before clearing the colorbar axes: set_cmap redraws
+    # the attached colorbar, which fails on a cleared axis in matplotlib >= 3.10.
+    if ax_fr.images:
+        ax_fr.images[0].set_cmap(CMAPS["heatmap"])
+
     for cax in [cax_r, cax_f]:
         cax.clear()
         cax.axis("off")
         cax.set_visible(False)
-
-    # Apply hot colormap
-    if ax_fr.images:
-        ax_fr.images[0].set_cmap(CMAPS["heatmap"])
 
     # Raster line widths
     for coll in ax_raster.collections:

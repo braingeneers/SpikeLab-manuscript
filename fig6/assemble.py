@@ -39,8 +39,6 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
-sys.path.insert(0, os.path.join(REPO_ROOT, "SpikeLab", "src"))
 sys.path.insert(0, CODE_DIR)
 
 from plot_config import (
@@ -107,7 +105,7 @@ def reg(ax, role, desc):
 # ═══════════════════════════════════════════════════════════════════════════
 # Load data
 # ═══════════════════════════════════════════════════════════════════════════
-results_dir = os.path.join(REPO_ROOT, "manuscript", "data", "diazepam_casestudy")
+from data_paths import DIAZEPAM_DIR as results_dir
 ws_path = os.path.join(results_dir, "workspace")
 
 # Raster data
@@ -158,7 +156,9 @@ for rec in CONDITIONS:
     burst_edge_ranges[rec] = compute_closest_burst_edges(tb, edges)
 
 # Bottom row data
-burst_counts = [len(load_workspace_item(ws_path, rec, "tburst")) for rec in CONDITIONS]
+# Slices per recording in the combined stack, not detected bursts: a burst too
+# close to the recording edge for a full window has no slice.
+burst_counts = np.bincount(cond_idx, minlength=len(CONDITIONS)).tolist()
 corr_stack = load_workspace_item(ws_path, "all", "burst_corr_per_unit").stack
 within_corrs = extract_within_condition_corrs(corr_stack, burst_counts)
 pval_corr, sig_corr, _ = compute_pairwise_ttests(within_corrs)
