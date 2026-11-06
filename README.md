@@ -31,9 +31,9 @@ Shared utilities at the root:
 ## Prerequisites (Figs. 3-7)
 
 - Python 3.10+
-- [SpikeLab](https://github.com/braingeneers/SpikeLab) 0.1.2: `pip install spikelab==0.1.2`
+- [SpikeLab](https://github.com/braingeneers/SpikeLab) 0.1.3 ([doi.org/10.5281/zenodo.24015451](https://doi.org/10.5281/zenodo.24015451)), the version the manuscript cites: `pip install spikelab==0.1.3`
 - `pip install scikit-learn networkx python-louvain Pillow`
-- Fig. 7 also needs the GPLVM extra: `pip install "spikelab[gplvm]==0.1.2"` and `pip install git+https://github.com/samdeoxys1/poor-man-GPLVM.git`
+- Fig. 7 also needs the GPLVM extra: `pip install "spikelab[gplvm]==0.1.3"` and `pip install git+https://github.com/samdeoxys1/poor-man-GPLVM.git`
 - Spike-sorted recordings: download `sorted-recordings.zip` (Supplementary Data 3) from [doi.org/10.5281/zenodo.22681642](https://doi.org/10.5281/zenodo.22681642) and unzip it into `data/`, so the recordings are in `data/sorted_recordings/`. To keep the data elsewhere, set `SPIKELAB_MANUSCRIPT_DATA` to that folder.
 - Disk space: the computed workspaces need about 30 GB free, most of it for Fig. 3 (a 12 GB workspace, briefly written twice while saving).
 
